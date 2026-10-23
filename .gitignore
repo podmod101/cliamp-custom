@@ -1,0 +1,21 @@
+cliamp
+mp3/
+navdata/
+plans/
+test.md
+/roadmap.md
+spotify.log
+.DS_Store
+docs/ideas.md
+/plugins.md
+.worktrees/
+config.backup.toml
+.env
+.github/workflows/contextowl-changelog.yml
+/gui/
+
+# Machine-specific CLIamp data must never be published.
+youtube-search-history.json
+.cliamp-identification.json
+*.pkg.tar.*
+*.sig
