@@ -845,6 +845,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.save.finishDownload()
 		if msg.err != nil {
 			m.status.Errorf(statusTTLMedium, "Download failed: %s", msg.err)
+		} else if msg.warning != "" {
+			m.status.Warning(msg.warning+": "+msg.path, statusTTLLong)
+		} else if msg.identification {
+			m.status.Showf(statusTTLLong, "Saved %d track(s), %d identified (%s): %s", msg.tracks, msg.identified, msg.method, msg.path)
+		} else if msg.tracks > 0 {
+			m.status.Showf(statusTTLLong, "Saved %d track(s), %s: %s", msg.tracks, msg.method, msg.path)
 		} else {
 			m.status.Showf(statusTTLMedium, "Saved to %s", msg.path)
 		}

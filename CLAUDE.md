@@ -2,18 +2,21 @@
 
 > A retro terminal music player (Go + Bubbletea). This file tells AI agents where things live, what conventions the codebase uses, and which skills to lean on.
 
-## Extended context
+## Custom build on Omarchy
 
-**More narrative detail, design notes, and roadmap context for cliamp lives in `~/Documents/bjarne/projects/cliamp/`.** Read files in that directory when you need background that isn't captured in code or in `docs/`. Treat it as the project's long-form knowledge base (goals, decisions, TODOs). If a question feels strategic rather than tactical, check there first.
-
----
+This checkout contains the full custom source; read `docs/omarchy.md` and
+`LOCAL-CHANGES.md` first. Use `scripts/install-omarchy.sh` to build this source.
+Do not install an upstream binary or run `cliamp upgrade` over this build.
+Inspect and preserve the target machine's configuration and customization log;
+never copy personal files from another system. Follow the documented selective
+backup/rollback process. Original upstream architecture guidance follows.
 
 ## What cliamp is
 
 A TUI music player inspired by Winamp. Plays local files, HTTP streams, podcasts, and content from many providers: YouTube / YouTube Music, SoundCloud, Bilibili, Spotify, Xiaoyuzhou, Navidrome, Plex, Jellyfin, and a curated radio directory. Ships with a spectrum visualizer, 10-band parametric EQ, Lua plugin system, IPC remote control, and MPRIS/MediaRemote integration.
 
 - Site: https://cliamp.stream
-- Install: `curl -fsSL https://cliamp.stream/install.sh | sh`
+- Custom install: `bash scripts/install-omarchy.sh --install-deps`
 - Entry point: `main.go` → `run(...)` wires providers, player, playlist, Lua plugin manager, IPC server, and the Bubbletea program.
 - CLI built with `urfave/cli/v3` in `commands.go`.
 
@@ -87,7 +90,7 @@ make install      # installs binary into ~/.local/bin
 
 - Go version: **1.26** (see `go.mod`; toolchain pinned via `mise.toml`).
 - Linux build needs `libasound2-dev` / `alsa-lib` at build time.
-- For audio at runtime on PipeWire or PulseAudio, install `pipewire-alsa` or `pulseaudio-alsa` (see memory `project_alsa_audio_troubleshooting.md`).
+- For audio at runtime on PipeWire or PulseAudio, install `pipewire-alsa` or `pulseaudio-alsa` (see README troubleshooting).
 - Optional runtime deps: `ffmpeg` (AAC/ALAC/Opus/WMA), `yt-dlp` (YT/SC/Bandcamp/Bilibili).
 
 Tests are colocated with sources (`*_test.go`). Favor table-driven tests — the codebase already uses them heavily in `player/`, `playlist/`, `config/`, `ui/model/`, and `luaplugin/`.
@@ -142,7 +145,7 @@ Golden path for a non-trivial change:
 | "Where are bundled plugins?" | `plugins/` (first-party) |
 | "What visualizers exist?" | `ui/vis_*.go` |
 | "How is configuration resolved?" | `config/config.go` (load), `config/flags.go` (CLI overrides), `config/saver.go` (save) |
-| "Why does my audio break silently on Linux?" | See memory `project_alsa_audio_troubleshooting.md` and README troubleshooting section |
+| "Why does my audio break silently on Linux?" | See the README troubleshooting section |
 
 ---
 

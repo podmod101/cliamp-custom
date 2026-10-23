@@ -15,6 +15,7 @@ import (
 	"github.com/bjarneo/cliamp/favorites"
 	"github.com/bjarneo/cliamp/history"
 	"github.com/bjarneo/cliamp/internal/fileutil"
+	"github.com/bjarneo/cliamp/internal/searchhistory"
 	"github.com/bjarneo/cliamp/playlist"
 	"github.com/bjarneo/cliamp/provider"
 	"github.com/bjarneo/cliamp/tracksave"
@@ -862,6 +863,8 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 
 	case "ctrl+s":
 		return m.saveTrack()
+	case "alt+s":
+		return m.saveYouTubeToMusic()
 	case "S":
 		return m.switchToProvider("spotify")
 
@@ -1175,6 +1178,11 @@ func (m *Model) openProviderSearchWith(prov playlist.Provider) {
 	m.netSearch = netSearchState{
 		active: true,
 		screen: netSearchInput,
+	}
+	if queries, err := searchhistory.Load(); err == nil {
+		m.netSearch.history = queries
+	} else {
+		m.status.Warning("Could not load YouTube search history: "+err.Error(), statusTTLDefault)
 	}
 	m.prevFocus = m.focus
 	m.focus = focusNetSearch
@@ -1625,6 +1633,11 @@ func (m *Model) handleNetSearchInputKey(msg tea.KeyPressMsg) tea.Cmd {
 	case tea.KeyEscape:
 		m.closeNetSearch()
 
+	case tea.KeyUp, tea.KeyDown:
+		if !m.netSearch.soundcloud && !m.netSearch.loading {
+			m.browseYouTubeSearchHistory(msg.Code == tea.KeyUp)
+		}
+
 	case tea.KeyEnter:
 		if strings.TrimSpace(m.netSearch.query) == "" {
 			m.netSearch.err = "Enter a search query."
@@ -1634,6 +1647,14 @@ func (m *Model) handleNetSearchInputKey(msg tea.KeyPressMsg) tea.Cmd {
 			prefix := "ytsearch10:"
 			if m.netSearch.soundcloud {
 				prefix = "scsearch10:"
+			} else {
+				queries, err := searchhistory.Record(m.netSearch.query)
+				if err == nil {
+					m.netSearch.history = queries
+				} else {
+					m.status.Warning("Could not save YouTube search history: "+err.Error(), statusTTLDefault)
+				}
+				m.netSearch.historyPos = 0
 			}
 			m.netSearch.loading = true
 			m.netSearch.err = ""

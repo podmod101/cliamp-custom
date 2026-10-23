@@ -25,7 +25,7 @@ shuffle = false
 # Start with mono output (L+R downmix)
 mono = false
 
-# Initial directory for the file browser ('o' key). 
+# Initial directory for the file browser ('o' key).
 # Supports environment variables ($HOME) and tilde expansion (~/Music).
 # initial_directory = "~/Music"
 

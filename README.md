@@ -1,3 +1,32 @@
+# CLIamp Custom for Omarchy
+
+Full source for a custom build of [CLIamp](https://github.com/bjarneo/cliamp),
+based on upstream v2.3.0. Adds persistent YouTube search history, **Alt+S** full
+non-live YouTube audio downloads to `~/Music`, chapter/silence track splitting,
+SongRec artist/title identification, ordered playlists, and validated cleanup
+of redundant full recordings.
+
+**[Install on Omarchy or ask Claude to install](docs/omarchy.md)** ·
+[Feature details](LOCAL-CHANGES.md) · [License and dependency notes](docs/omarchy.md#source-and-licenses)
+
+```bash
+git clone https://github.com/podmod101/cliamp-custom.git
+cd cliamp-custom
+bash scripts/install-omarchy.sh --install-deps
+~/.local/bin/cliamp-custom
+```
+
+This source snapshot contains no personal configuration or music. Track
+identification uses SongRec with Shazam's online service. Downloaded music and
+identification accuracy depend on the source and service. No model is bundled.
+The custom additions use the upstream MIT license. Dependencies retain their own
+licenses, including GPL dependencies; no prebuilt binaries are distributed here.
+
+The original upstream documentation follows. Its package and release install
+commands install the upstream version; use the guide above for this custom build.
+
+---
+
 [![Docs on contextowl.co](https://contextowl.co/uploads/_brand/badge-docs.svg)](https://contextowl.co)
 
 A retro terminal music player inspired by Winamp. Play local files, streams, podcasts, YouTube, YouTube Music, SoundCloud, Mixcloud, Bilibili, Spotify, NetEase Cloud Music, Yandex Music, Xiaoyuzhou (小宇宙), Navidrome, Lyrion, Plex, Jellyfin, and Audiobookshelf. Use the spectrum visualizer, parametric EQ, and playlist manager.
@@ -15,7 +44,7 @@ https://github.com/user-attachments/assets/fbc33d20-e3ac-4a62-a991-8a2f0243c8ea
   <a href="https://contextowl.co"><img src="https://contextowl.co/uploads/_brand/sponsor-dark.svg" alt="Proudly sponsored by contextowl.co" width="400"></a>
 </div>
 
-## Install
+## Upstream installation (without these customizations)
 
 ```sh
 curl -fsSL https://cliamp.stream/install.sh | sh

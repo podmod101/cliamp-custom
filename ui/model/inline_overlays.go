@@ -558,6 +558,9 @@ func (m Model) renderNetSearchBody() string {
 			lines = append(lines, dimStyle.Render("  Searching "+m.netSearchSource()+"..."))
 		} else {
 			lines = append(lines, dimStyle.Render("  Type a query and press Enter to search "+m.netSearchSource()+"."))
+			if !m.netSearch.soundcloud {
+				lines = append(lines, dimStyle.Render("  Up/Down: browse the last 20 searches."))
+			}
 		}
 		if m.netSearch.err != "" {
 			lines = append(lines, "", errorStyle.Render("  "+m.netSearch.err))

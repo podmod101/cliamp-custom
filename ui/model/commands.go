@@ -137,8 +137,13 @@ type ytdlBatchMsg struct {
 
 // ytdlSavedMsg signals that an async yt-dlp download-to-disk completed.
 type ytdlSavedMsg struct {
-	path string
-	err  error
+	path           string
+	tracks         int
+	method         string
+	warning        string
+	identified     int
+	identification bool
+	err            error
 }
 
 // — Navidrome browser message types —

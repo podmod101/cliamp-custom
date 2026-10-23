@@ -52,6 +52,9 @@ type netSearchState struct {
 	scroll     int
 	err        string
 	request    string
+	history    []string // YouTube queries, newest first
+	historyPos int      // 0 = draft; 1 = newest query
+	draft      string
 }
 
 // provSearchState holds state for filtering the provider playlist list.
