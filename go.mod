@@ -80,3 +80,5 @@ require (
 	google.golang.org/grpc v1.83.2 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 )
+
+replace github.com/ebitengine/oto/v3 => ./third_party/oto

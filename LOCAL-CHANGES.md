@@ -125,3 +125,16 @@ with the same size and timestamp must still fail the digest check.
 
 To return to the packaged player, follow the selective rollback instructions
 in [docs/omarchy.md](docs/omarchy.md). Keep music, playlists, and history.
+
+## PipeWire-safe audio output (vendored oto)
+
+On Linux, cliamp's audio library (oto) tried ALSA's `default` first, then every
+raw `hw:`/`plughw:` device. On PipeWire systems `default` can be plain dmix on
+the sound card, so cliamp held the card open and PipeWire/WirePlumber could not
+create the real output sink, leaving Chrome and other apps silent.
+
+`third_party/oto` is oto v3.4.1 with one change (see `CLIAMP-PATCH.md`): when a
+PipeWire socket exists, only the `pipewire` PCM is tried (PulseAudio-only
+systems use `default`/`plug:default`). If it cannot be opened, cliamp reports
+"audio output unavailable" instead of grabbing the hardware. `go.mod` carries a
+`replace` for it; re-apply the patch when bumping oto.
