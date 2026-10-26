@@ -19,3 +19,7 @@ youtube-search-history.json
 .cliamp-identification.json
 *.pkg.tar.*
 *.sig
+__pycache__/
+*.pyc
+.venv/
+vibe-preferences.json

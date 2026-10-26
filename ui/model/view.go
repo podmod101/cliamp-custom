@@ -139,6 +139,13 @@ func (m Model) View() tea.View {
 	if m.quitting {
 		return tea.NewView("")
 	}
+	if m.vibe.visible {
+		view := tea.NewView(m.renderVibeStreams())
+		view.AltScreen = true
+		view.BackgroundColor = ui.ColorBackground
+		view.ForegroundColor = ui.ColorText
+		return view
+	}
 	m.recomputeLayout()
 	if m.layout.tooSmall() {
 		content := fmt.Sprintf("Terminal too small. Resize to at least 40x10 (current: %dx%d).", m.width, m.height)
@@ -201,6 +208,9 @@ func (m Model) mainSections(playlist string, includeTransient, contentFirst bool
 			m.renderSimplifiedTrackInfo(),
 			m.renderTimeStatus(),
 			m.renderSeekBar(),
+		}
+		if indicator := m.vibeIndicator(); indicator != "" {
+			sections = append(sections, dimStyle.Render(indicator))
 		}
 		if includeTransient {
 			if line := m.renderTransient(); line != "" {
@@ -525,7 +535,7 @@ func (m Model) renderFullVisualizer() string {
 		"",
 		m.renderSpectrum(),
 		m.renderSeekBar(),
-		"",
+		dimStyle.Render(m.vibeIndicator()),
 		helpKey("V", "Exit ") + helpKey("v", "Mode:"+m.vis.ModeName()+" ") + helpKey("Spc", "▶❚❚ ") + helpKey("<>", "Trk ") + helpKey("+-", "Vol ") + helpKey("?", "Keys"),
 	}
 
@@ -1090,6 +1100,15 @@ func (m Model) renderBottomStatus() string {
 		right = dimStyle.Render(right)
 	}
 
+	if indicator := m.vibeIndicator(); indicator != "" {
+		left += "  " + dimStyle.Render(indicator)
+		if lipgloss.Width(left) > ui.PanelWidth {
+			left = dimStyle.Render(indicator)
+		}
+		if lipgloss.Width(left)+lipgloss.Width(right)+1 > ui.PanelWidth {
+			right = ""
+		}
+	}
 	leftW := lipgloss.Width(left)
 	rightW := lipgloss.Width(right)
 	gap := max(1, ui.PanelWidth-leftW-rightW)

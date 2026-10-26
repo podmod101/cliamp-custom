@@ -30,3 +30,26 @@ The new repository's GitHub Actions are disabled. The inherited workflow files
 are retained as source references; release, AUR and Pages publishing need a
 separate review before enabling them for this repository. No website or binary
 release was published as part of the source upload.
+
+## 2026-10-26: Playlist discovery and background navigation
+
+The custom-v2.0.1 branch adds the integrated Spotify playlist picker, local
+OpenClaw search planning, independent public YouTube song samples, local CLAP
+stream verification, worldwide radio/live-YouTube discovery, genre searches,
+private saved results and minimizable background searching. The newer main
+branch uses a different upstream base; this publication does not replace it.
+
+The pending source inventory was checked for unexpected file types, large files,
+machine paths, personal playlist identifiers/titles, private-key markers and
+credential assignments. Reviewed credential-related matches are runtime field
+names or synthetic test fixtures. No personal configuration, account tokens,
+cookies, music, downloaded weights, runtime caches, local backups or binaries are
+included. This is a source/content review, not a new Gitleaks scan; the original
+scanner findings above concern unchanged upstream values.
+
+Audio/model dependencies remain optional and isolated; weights are downloaded
+only by the opt-in runtime setup and are not bundled in Git. Existing upstream
+and dependency licenses remain applicable. Offline Go/Python tests and the
+background-worker race fixtures verify behavior without calling live services
+or running model inference. The branch-specific clone command and site guide
+link select the source version containing these features.

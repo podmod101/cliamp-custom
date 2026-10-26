@@ -49,7 +49,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}()
 
 	switch msg := msg.(type) {
+	case vibeEvent:
+		cmd := m.handleVibeEvent(msg)
+		return m, cmd
 	case tea.PasteMsg:
+		if m.vibe.visible {
+			if m.vibe.filtering {
+				m.vibe.query = truncate(strings.TrimSpace(msg.Content), 200)
+				m.vibe.cursor = 0
+			}
+			return m, nil
+		}
 		cmd := m.handlePaste(msg.Content)
 		return m, cmd
 

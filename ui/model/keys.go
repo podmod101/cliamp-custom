@@ -22,6 +22,8 @@ import (
 
 // quit shuts down the player and signals the TUI to exit.
 func (m *Model) quit() tea.Cmd {
+	m.closeVibeStreams()
+	m.releaseVibeProvider()
 	// Only save resume for seekable tracks:
 	// - local files (not stream)
 	// - HTTP streams with known duration (podcast MP3s, seek-by-reconnect)
@@ -201,6 +203,19 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 	if msg.String() == "ctrl+c" {
 		return m.quit()
 	}
+	if m.vibe.visible {
+		return m.handleVibeKey(msg)
+	}
+	// Explicit search shortcuts work over queue/browser views too. The view
+	// underneath remains intact and returns when the search is minimized.
+	if !m.provAskLoc {
+		switch msg.String() {
+		case "alt+l":
+			return m.openLastVibeResults()
+		case "alt+r":
+			return m.openVibeStreams()
+		}
+	}
 	if msg.String() == "ctrl+z" {
 		return m.undoPlaylistMutation()
 	}
@@ -358,6 +373,10 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 		switch msg.String() {
 		case "q", "ctrl+c":
 			return m.quit()
+		case "alt+r":
+			return m.openVibeStreams()
+		case "alt+l":
+			return m.openLastVibeResults()
 		case "p":
 			if m.isActiveProvider("Local") && m.localProvider != nil {
 				m.openPlaylistManager()
@@ -518,6 +537,10 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 	switch msg.String() {
 	case "q", "ctrl+c":
 		return m.quit()
+	case "alt+r":
+		return m.openVibeStreams()
+	case "alt+l":
+		return m.openLastVibeResults()
 	case "esc", "backspace", "b":
 		if m.focus == focusPlaylist {
 			// Keep current expanded/collapsed height mode when switching focus.

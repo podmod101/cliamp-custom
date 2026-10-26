@@ -54,7 +54,7 @@ fi
 "${go_runner[@]}" make check
 build_dir=$(mktemp -d)
 trap 'rm -rf -- "$build_dir"; if [[ -n ${install_tmp:-} ]]; then rm -f -- "$install_tmp"; fi' EXIT
-version=v2.0.1+search-history.youtube-cleanup
+version=v2.0.1+search-history.youtube-cleanup.playlist-streams.background
 "${go_runner[@]}" go build -trimpath -ldflags="-s -w -X main.version=$version" -o "$build_dir/cliamp" .
 
 bin_dir="$HOME/.local/bin"

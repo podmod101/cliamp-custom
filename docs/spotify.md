@@ -1,5 +1,10 @@
 # Spotify Integration
 
+The custom build also provides **Alt+R** to browse Spotify playlists and find
+live radio/YouTube streams by actual audio similarity. It uses a separate local
+audio runtime and independent public YouTube recordings for reference samples.
+See [playlist stream matching](playlist-streams.md) for setup and limitations.
+
 Use Cliamp to stream your [Spotify](https://www.spotify.com/) library through its audio pipeline. EQ, the visualizer, and other effects apply. You need a [Spotify Premium](https://www.spotify.com/premium/) account.
 
 > **Windows:** Build cliamp with CGO enabled and a MinGW toolchain for Spotify support. See [Building from source](../README.md#building-from-source) in the README. Pre-built Windows binaries from Releases include Spotify support.
@@ -52,6 +57,13 @@ bitrate = 320
 cliamp uses a built-in `client_id`. [librespot](https://github.com/librespot-org/librespot) and [spotify-player](https://github.com/aome510/spotify-player) use the same client ID.
 
 > **Shared rate limit:** The built-in `client_id` is shared by librespot, spotify-player, and cliamp users worldwide. Spotify applies its per-app quota globally. A busy pool can cause `429 Too Many Requests` during search or playlist loading. Cliamp retries with backoff. Persistent 429 errors indicate a busy pool. Your own `client_id` has a separate quota.
+
+Long `Retry-After` delays are displayed immediately with a retry time. CLIamp
+remembers the cooldown for that provider while it remains open, including after
+refreshing or reopening Alt+R. Short retries still honor Spotify's backoff.
+Rate limits do not imply that valid credentials must be deleted or reset.
+Alt+R fetches playlists directly and does not depend on Liked Songs, your profile
+or saved albums being available.
 
 ## Usage
 

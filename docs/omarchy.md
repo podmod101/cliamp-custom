@@ -5,10 +5,14 @@ This repository contains the complete customized source based on upstream
 `c9cb29f85bcb5ed6d0af4f879eced8cbfd27a9a1`. No other custom CLIamp installation
 is needed. Claude Code is optional: these commands also work in a terminal.
 
+The **custom-v2.0.1** branch contains this playlist-stream build. The repository
+default branch has a newer upstream base; use the branch below to get the
+features and version described in this guide.
+
 ## Install
 
 ```bash
-git clone https://github.com/podmod101/cliamp-custom.git
+git clone --branch custom-v2.0.1 https://github.com/podmod101/cliamp-custom.git
 cd cliamp-custom
 bash scripts/install-omarchy.sh --install-deps
 ~/.local/bin/cliamp-custom
@@ -26,7 +30,7 @@ The script runs `make check`, builds this checkout, backs up any replaced
 files under `${XDG_STATE_HOME:-~/.local/state}/cliamp-custom-install.*`, and
 installs the executable, a `cliamp-custom` wrapper, and a user desktop entry.
 It leaves the system CLIamp package intact. Choose **CLIamp Custom** in the
-application launcher. The version is `v2.0.1+search-history.youtube-cleanup`.
+application launcher. The version is `v2.0.1+search-history.youtube-cleanup.playlist-streams.background`.
 
 ## Connect the terminal command and Music shortcut
 

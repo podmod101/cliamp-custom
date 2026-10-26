@@ -1,5 +1,29 @@
 # Local YouTube search history, downloads, and track identification
 
+## Playlist stream discovery
+
+Alt+R starts a new Spotify playlist stream search, confirming before replacing
+running work. Esc/m minimizes the screen without cancelling; normal music,
+queue and browser controls work while searching continues. Alt+L reopens active
+progress or results, retaining selection and restoring the list after restart
+without playlist/provider/model/capture work. One owner-only saved snapshot is
+kept in the config directory; older legacy worker output can be recovered when
+no snapshot exists. Saved measurements are labeled with their age, not refreshed.
+Local OpenClaw reasoning uses curator intent and stratified playlist samples;
+CLAP verifies audio. Enter plays and minimizes while searching continues. The
+status line shows AI searching/results ready and Alt+L. On the search screen,
+s explicitly cancels and keeps results; after stopping/finishing, g chooses a
+playlist genre and d searches deeper. b returns to playlists with confirmation
+if a search is running. See [navigation](docs/background-stream-search.md).
+Genre eligibility and audio variety preserve raw cosine scores.
+
+Detailed implementation history, preserved from this document:
+[playlist stream changes](docs/playlist-stream-changes.md).
+Setup and limitations: [playlist matching](docs/playlist-streams.md) and
+[worldwide/genre discovery](docs/worldwide-streams.md).
+
+## Existing custom features
+
 Based on CLIamp v2.0.1, with the last 20 submitted YouTube queries saved in
 `~/.config/cliamp/youtube-search-history.json` (or the configured CLIamp config
 directory). Up recalls older queries; Down recalls newer queries and finally
@@ -70,7 +94,7 @@ previously completed downloads using their saved track record. User docs and the
 are updated in `docs/keybindings.md`, `docs/yt-dlp.md`, and `site/index.html`.
 
 The custom executable is installed at `~/.local/bin/cliamp`. Its version is
-`v2.0.1+search-history.youtube-cleanup`. The portable installer, launcher setup,
+`v2.0.1+search-history.youtube-cleanup.playlist-streams.background`. The portable installer, launcher setup,
 Claude prompt, update instructions, backups, and rollback are documented in
 [docs/omarchy.md](docs/omarchy.md). It builds this checkout and never fetches an
 upstream prebuilt CLIamp binary.

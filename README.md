@@ -4,13 +4,19 @@ Full source for a custom build of [CLIamp](https://github.com/bjarneo/cliamp),
 based on upstream v2.0.1. Adds persistent YouTube search history, **Alt+S** full
 non-live YouTube audio downloads to `~/Music`, chapter/silence track splitting,
 SongRec artist/title identification, ordered playlists, and validated cleanup
-of redundant full recordings.
+of redundant full recordings. **Alt+R** browses Spotify playlists and finds worldwide live
+radio/YouTube matches through local metadata reasoning and measured CLAP audio.
+Verified results appear progressively; Esc/m returns to your music while searching
+continues, and Alt+L reopens progress/results without reprocessing. Enter plays;
+s on the search screen cancels and keeps results. See
+[navigation](docs/background-stream-search.md) and [worldwide discovery](docs/worldwide-streams.md) for
+setup links, tested policies, coverage and limitations.
 
 **[Install on Omarchy or ask Claude to install](docs/omarchy.md)** ·
 [Feature details](LOCAL-CHANGES.md) · [License and dependency notes](docs/omarchy.md#source-and-licenses)
 
 ```bash
-git clone https://github.com/podmod101/cliamp-custom.git
+git clone --branch custom-v2.0.1 https://github.com/podmod101/cliamp-custom.git
 cd cliamp-custom
 bash scripts/install-omarchy.sh --install-deps
 ~/.local/bin/cliamp-custom

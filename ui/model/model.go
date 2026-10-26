@@ -225,6 +225,8 @@ const (
 
 // Model is the Bubbletea model for the CLIAMP TUI.
 type Model struct {
+	vibe            vibeState
+	vibeResultsPath string
 	// Core playback
 	player        player.Engine
 	playlist      *playlist.Playlist

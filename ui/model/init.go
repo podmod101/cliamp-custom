@@ -45,6 +45,7 @@ func New(p player.Engine, pl *playlist.Playlist, providers []ProviderEntry, defa
 		navBrowser:       navBrowserState{},
 		luaMgr:           luaMgr,
 		historyStore:     history.New(),
+		vibeResultsPath:  defaultVibeResultsPath(),
 		showAlbumHeaders: false,
 	}
 	if fm, ok := localProv.(provider.FavoritesManager); ok {

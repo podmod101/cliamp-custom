@@ -84,6 +84,8 @@ and `Esc` clears it.
 | `i` | Show track metadata (`↑`/`↓` scrolls) |
 | `Ctrl+S` | Save track to `~/Music/cliamp` |
 | `Alt+S` | Save the full non-live YouTube audio to a stream-named folder in `~/Music`, split tracks, and identify artist/song names online |
+| `Alt+R` | New Spotify stream search; confirm replacing running work ([guide](background-stream-search.md)) |
+| `Alt+L` | Reopen active search/latest results without reprocessing; saved results survive restart |
 | `w` | Write the highlighted track to a local playlist |
 | `N` | Open the active provider browser. On a selected Mixcloud show, open that creator's Uploads/Favorites. In the radio pane, open the country browser. |
 | `L` | Browse local playlists (with cliamp radio) |

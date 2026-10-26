@@ -82,6 +82,8 @@ func (c commandSpec) label(m Model) string {
 // editor keys that are not shown in the global keymap. Keep key labels in this
 // table so the keymap cannot drift from plugin key reservations.
 var commandRegistry = []commandSpec{
+	{Mode: commandModeMain | commandModeProvider, Keys: []string{"alt+r"}, KeyLabel: "Alt+R", Label: "New Spotify playlist stream search", Keymap: true},
+	{Mode: commandModeMain | commandModeProvider, Keys: []string{"alt+l"}, KeyLabel: "Alt+L", Label: "Reopen AI search or latest stream results", Keymap: true, ContextHelp: true},
 	{Mode: commandModeMain | commandModeEQ | commandModeSpeed, Keys: []string{"space"}, KeyLabel: "Space", Label: "Play / Pause", Keymap: true, ContextHelp: true, Primary: true},
 	{Mode: commandModeMain, Keys: []string{"s"}, KeyLabel: "s", Label: "Stop", Keymap: true},
 	{Mode: commandModeMain, Keys: []string{">", "."}, KeyLabel: "> .", Label: "Next track", Keymap: true},

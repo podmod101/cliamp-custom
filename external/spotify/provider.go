@@ -55,8 +55,13 @@ type SpotifyProvider struct {
 	authCancel context.CancelFunc        // cancels any in-progress OAuth flow
 
 	// Playlist list cache to avoid redundant API calls on provider switch.
-	listCache   []playlist.PlaylistInfo
-	listCacheAt time.Time
+	listCache            []playlist.PlaylistInfo
+	listCacheAt          time.Time
+	matchingListCache    []playlist.PlaylistInfo
+	matchingListCacheAt  time.Time
+	matchingDescriptions map[string]string
+	matchingTrackCache   map[string][]playlist.Track
+	rateLimitedUntil     time.Time
 }
 
 const playlistListCacheTTL = 5 * time.Minute
@@ -76,6 +81,13 @@ func New(session *Session, clientID string, bitrate int) *SpotifyProvider {
 // ensureSession tries to create a session using stored credentials only
 // (no browser). Returns playlist.ErrNeedsAuth if interactive sign-in is needed.
 func (p *SpotifyProvider) ensureSession() error {
+	return p.ensureSessionContext(context.Background())
+}
+
+func (p *SpotifyProvider) ensureSessionContext(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	p.mu.Lock()
 	if p.session != nil {
 		p.mu.Unlock()
@@ -87,8 +99,11 @@ func (p *SpotifyProvider) ensureSession() error {
 	if clientID == "" {
 		return fmt.Errorf("spotify: no client ID available")
 	}
-	sess, err := NewSessionSilent(context.Background(), clientID)
+	sess, err := NewSessionSilent(ctx, clientID)
 	if err != nil {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 		return playlist.ErrNeedsAuth
 	}
 	p.mu.Lock()
@@ -101,6 +116,10 @@ func (p *SpotifyProvider) ensureSession() error {
 // Authenticate runs the interactive sign-in flow (opens browser, waits for callback).
 // Any previous in-progress OAuth flow is cancelled first to free the callback port.
 func (p *SpotifyProvider) Authenticate() error {
+	return p.AuthenticateContext(context.Background())
+}
+
+func (p *SpotifyProvider) AuthenticateContext(parent context.Context) error {
 	p.mu.Lock()
 	if p.session != nil {
 		p.mu.Unlock()
@@ -117,7 +136,7 @@ func (p *SpotifyProvider) Authenticate() error {
 		return fmt.Errorf("spotify: no client ID available")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(parent, 5*time.Minute)
 	p.mu.Lock()
 	p.authCancel = cancel
 	p.mu.Unlock()
@@ -159,6 +178,8 @@ func (p *SpotifyProvider) Close() {
 func (p *SpotifyProvider) resetSessionScopedStateLocked() {
 	p.userID = ""
 	p.meFetched = false
+	p.listCache = nil
+	p.matchingListCache = nil
 }
 
 func (p *SpotifyProvider) Name() string { return "Spotify" }
@@ -581,6 +602,12 @@ func (p *SpotifyProvider) webAPIWithBody(ctx context.Context, method, path strin
 	}
 
 	for attempt := range maxRetries {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		if limited := p.rateLimitError(time.Now()); limited != nil {
+			return nil, limited
+		}
 		var reqBody io.Reader
 		if bodyBytes != nil {
 			reqBody = bytes.NewReader(bodyBytes)
@@ -592,20 +619,23 @@ func (p *SpotifyProvider) webAPIWithBody(ctx context.Context, method, path strin
 		}
 		if resp.StatusCode == http.StatusTooManyRequests {
 			resp.Body.Close()
-			// On the last attempt there's no retry after the wait, so don't
-			// sleep (up to 128s) just to give up; fail now.
-			if attempt == maxRetries-1 {
-				break
+			now := time.Now()
+			wait := retryDelay(resp.Header.Get("Retry-After"), now, time.Duration(1<<uint(attempt))*time.Second)
+			limited := p.rememberRateLimit(now.Add(wait))
+			// Long server cooldowns belong in the UI, not in an invisible wait
+			// that eventually turns into context deadline exceeded.
+			if attempt == maxRetries-1 || wait > 5*time.Second {
+				return nil, limited
 			}
-			wait := time.Duration(1<<uint(attempt)) * time.Second
-			if ra := resp.Header.Get("Retry-After"); ra != "" {
-				if secs, err := strconv.Atoi(ra); err == nil && secs > 0 {
-					wait = time.Duration(secs) * time.Second
-				}
+			if deadline, ok := ctx.Deadline(); ok && deadline.Before(limited.Until) {
+				return nil, limited
 			}
 			applog.UserWarn("spotify: web api rate-limited on %s, retrying in %v (attempt %d/%d)", path, wait, attempt+1, maxRetries)
 			select {
 			case <-ctx.Done():
+				if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+					return nil, limited
+				}
 				return nil, ctx.Err()
 			case <-time.After(wait):
 				continue
@@ -623,7 +653,7 @@ func (p *SpotifyProvider) webAPIWithBody(ctx context.Context, method, path strin
 		}
 		return resp, nil
 	}
-	return nil, fmt.Errorf("spotify: web api rate-limited on %s after %d retries (try re-authenticating)", path, maxRetries)
+	return nil, fmt.Errorf("spotify: web api request failed after %d retries", maxRetries)
 }
 
 // devModeSearchLimit is the largest per-request limit /v1/search accepts for an
