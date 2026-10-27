@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/ebitengine/oto/v3/internal/mux"
@@ -101,7 +102,25 @@ func NewContext(options *NewContextOptions) (*Context, chan struct{}, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return &Context{context: ctx}, ready, nil
+	c := &Context{context: ctx}
+	theCreatedContext.Store(c)
+	return c, ready, nil
+}
+
+// CLIAMP LOCAL PATCH: theCreatedContext lets callers that reach oto only through
+// a wrapper (beep's speaker keeps its Context private) detect a failed driver.
+var theCreatedContext atomic.Pointer[Context]
+
+// CreatedContextErr returns the error of the process's Context, or nil if none
+// has been created. Once the driver fails, playback stops permanently.
+//
+// CreatedContextErr is concurrent-safe.
+func CreatedContextErr() error {
+	c := theCreatedContext.Load()
+	if c == nil {
+		return nil
+	}
+	return c.Err()
 }
 
 // NewPlayer creates a new, ready-to-use Player belonging to the Context.

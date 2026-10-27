@@ -181,6 +181,13 @@ func newContext(sampleRate int, channelCount int, format mux.Format, bufferSizeI
 		} else {
 			periodSize = C.snd_pcm_uframes_t(1024)
 		}
+		// CLIAMP LOCAL PATCH: sound servers pull large quanta (PipeWire can be
+		// pinned at 4096 frames, ~85 ms). With a smaller ALSA buffer,
+		// snd_pcm_writei fails with EIO within seconds and playback stops.
+		const minServerBufferMs = 250
+		if socketExists("pipewire-0") || socketExists("pulse/native") {
+			periodSize = max(periodSize, C.snd_pcm_uframes_t(sampleRate*minServerBufferMs/1000/periods))
+		}
 		bufferSize := periodSize * periods
 		if err := c.alsaPcmHwParams(sampleRate, channelCount, &bufferSize, &periodSize); err != nil {
 			c.err.TryStore(err)

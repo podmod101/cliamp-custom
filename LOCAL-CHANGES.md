@@ -138,3 +138,12 @@ PipeWire socket exists, only the `pipewire` PCM is tried (PulseAudio-only
 systems use `default`/`plug:default`). If it cannot be opened, cliamp reports
 "audio output unavailable" instead of grabbing the hardware. `go.mod` carries a
 `replace` for it; re-apply the patch when bumping oto.
+
+Sound servers can pull large quanta (PipeWire pinned at 4096 frames, ~85 ms).
+The default `buffer_ms = 250` gives oto only 125 ms, so `snd_pcm_writei` failed
+with EIO after a few seconds and oto stopped silently while cliamp still showed
+"playing". The patched oto now uses at least a 250 ms ALSA buffer when a
+PipeWire or PulseAudio socket exists. It also exports `CreatedContextErr`;
+`Player.StreamErr` returns `player.ErrAudioOutput` once the driver fails, so
+the UI and `cliamp status` show "audio output stopped" instead of retrying
+stream reconnects (`ui/model/audio_output_test.go`). Restart cliamp to recover.

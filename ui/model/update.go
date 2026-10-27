@@ -210,7 +210,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if err := m.player.StreamErr(); err != nil && !m.seek.active && m.seek.grace == 0 {
 			track, idx := m.currentPlaybackTrack()
 			isStream := idx >= 0 && (track.Stream || playlist.IsYouTubeURL(track.Path) || playlist.IsYTDL(track.Path))
-			if isStream && m.reconnect.attempts < 5 {
+			if isStream && m.reconnect.attempts < 5 && !errors.Is(err, player.ErrAudioOutput) {
 				m.scheduleReconnect(now)
 			} else {
 				m.err = err

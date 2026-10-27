@@ -48,8 +48,6 @@ github.com/dlclark/regexp2/v2 v2.7.1 h1:yqDtwI1ptXXvEUNpYTk2lad4jLtAcKqkzepn4sav
 github.com/dlclark/regexp2/v2 v2.7.1/go.mod h1:avUrQvPaLz2DrFNHJF0taWAFFX2C1GMSSoeiqFjcBmU=
 github.com/dop251/goja v0.0.0-20260826204918-8f1c0696a37b h1:mYHoARbZ0mUYXXsaNeHoDFBft3TK4PpFEe3KU7hdDgg=
 github.com/dop251/goja v0.0.0-20260826204918-8f1c0696a37b/go.mod h1:u8yZRUavu+N4EnFFy6J5fVtjE7lEcZ2YyV2GcBXY9c8=
-github.com/ebitengine/oto/v3 v3.4.1 h1:uX7B03/P2P8oWiSI5HXjyjSP4besYn3V9nDk3cR+eIY=
-github.com/ebitengine/oto/v3 v3.4.1/go.mod h1:IOleLVD0m+CMak3mRVwsYY8vTctQgOM0iiL6S7Ar7eI=
 github.com/ebitengine/purego v0.10.2 h1:W809HbnvzAxgdm+aOvlSekrM16wGCdT/e76+9tS7gzE=
 github.com/ebitengine/purego v0.10.2/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
 github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeORc=

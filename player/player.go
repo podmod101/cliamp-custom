@@ -2,12 +2,14 @@ package player
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/ebitengine/oto/v3"
 	"github.com/gopxl/beep/v2"
 	"github.com/gopxl/beep/v2/speaker"
 )
@@ -1004,8 +1006,16 @@ func (p *Player) Seekable() bool {
 	return cur.seekable || (cur.ytdlSeek && cur.knownDuration > 0)
 }
 
-// StreamErr returns the current streamer error, if any (e.g., connection drops).
+// ErrAudioOutput reports that the audio driver failed and stopped pulling
+// samples. Playback cannot continue until cliamp is restarted.
+var ErrAudioOutput = errors.New("audio output stopped")
+
+// StreamErr returns the current streamer error, if any (e.g., connection drops),
+// or an ErrAudioOutput error once the audio driver has failed.
 func (p *Player) StreamErr() error {
+	if err := oto.CreatedContextErr(); err != nil {
+		return fmt.Errorf("%w: %v", ErrAudioOutput, err)
+	}
 	p.mu.Lock()
 	cur := p.current
 	p.mu.Unlock()
